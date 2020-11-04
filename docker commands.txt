@@ -1,0 +1,40 @@
+#########################################################################       Docker notes
+
+docker container run -ti ubuntu bash
+
+exit
+
+sudo service docker start.
+
+docker container ls -a
+
+docker container commit CONTAINER_ID
+
+docker image ls
+
+docker image tag <IMAGE_ID> ourfiglet
+docker image ls
+
+docker container run ourfiglet figlet hello
+
+# build docker image
+docker image build -t hello:v0.1 .
+docker container run hello:v0.1
+
+# pull a docker image 
+docker image pull alpine
+
+#cd into a docker
+docker exec -it containerId /bin/bash
+
+#List all containers (only IDs)
+docker ps -aq
+
+#Stop all running containers. 
+docker stop $(docker ps -aq)
+
+#Remove all containers. 
+docker rm $(docker ps -aq)
+
+#Remove all images. 
+docker rmi $(docker images -q)
