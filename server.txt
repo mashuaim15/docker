@@ -1,0 +1,281 @@
+bwt-elk01.wisers.com
+-------------------------------------------------------------------------------------------
+SSH login : load pkey in SSH>>>AUTH
+-------------------------------------------------------------------------------------------
+The database for the HK data flow is :
+Host: bedb03.wisers.com:3306 
+Username: isd_r
+Password：r_isd
+
+---------------------------------------------------------------------------------------------
+Besides,  Kibana 页面： 
+http://bwt-elk01.wisers.com:5601/
+先给你一个查看的账号
+username/password: isdsns01 / 3PSyYk6g
+---------------------------------------------------------------------------------------------
+
+ways to transfer files between local and remote:-----------------------------------------------
+
+scp -r polit@bwt-elk01.wisers.com:/home/pilot/workplace/retrieve_data brianma@192.168.3.116:/C:/Users/brianma/etl
+
+pscp polit@bwt-elk01.wisers.com:/home/pilot/workplace/retrieve_data brianma@192.168.3.116:/C:/Users/brianma/etl
+
+scp -r polit@bwt-elk01.wisers.com:/home/pilot/workplace/retrieve_data /Users/brianma/etl
+
+----------------crontab ---------------------------------------------------------------------------------------
+
+# 查看自己的 crontab
+crontab -l
+
+# 編輯 crontab 內容
+crontab -e
+
+# 查看指定使用者的 crontab
+sudo crontab -u gtwang -l
+
+# 編輯指定使用者的 crontab
+crontab -u gtwang -e
+
+# 刪除 crontab 內容
+crontab -r
+
+# ┌───────────── 分鐘   (0 - 59)
+# │ ┌─────────── 小時   (0 - 23)
+# │ │ ┌───────── 日     (1 - 31)
+# │ │ │ ┌─────── 月     (1 - 12)
+# │ │ │ │ ┌───── 星期幾 (0 - 7，0 是週日，6 是週六，7 也是週日)
+# │ │ │ │ │
+# * * * * * /path/to/command
+----------------------------------------exanples------------------------------------
+# 每天早上 8 點 30 分執行
+30 08 * * * /home/gtwang/script.sh --your --parameter
+
+# 每週日下午 6 點 30 分執行
+30 18 * * 0 /home/gtwang/script.sh --your --parameter
+
+# 每週日下午 6 點 30 分執行
+30 18 * * Sun /home/gtwang/script.sh --your --parameter
+
+# 每年 6 月 10 日早上 8 點 30 分執行
+30 08 10 06 * /home/gtwang/script.sh --your --parameter
+
+# 每月 1 日、15 日、29 日晚上 9 點 30 分各執行一次
+30 21 1,15,29 * * /home/gtwang/script.sh --your --parameter
+
+# 每隔 10 分鐘執行一次
+*/10 * * * * /home/gtwang/script.sh --your --parameter
+
+# 從早上 9 點到下午 6 點，凡遇到整點就執行
+00 09-18 * * * /home/gtwang/script.sh --your --parameter
+
+
+30 9 * * * /d01/home/pilot/workplace/virtualenvs/isd_ETL/bin/python /d01/home/pilot/workplace/retrieve_data/isd_post_topic.py >> /d01/home/pilot/workplace/crontab_log/topic.log 2>&1
+45 9 * * * /d01/home/pilot/workplace/virtualenvs/isd_ETL/bin/python /d01/home/pilot/workplace/retrieve_data/isd_comments_insert_new.py >> /d01/home/pilot/workplace/crontab_log/comments.log 2>&1
+*/20 * * * * /d01/home/pilot/workplace/virtualenvs/isd_ETL/bin/python /d01/home/pilot/workplace/retrieve_data/isd_sns_post_topic_v3.py >> /d01/home/pilot/workplace/crontab_log/sns_post.log 2>&1
+10 */3 * * * /d01/home/pilot/workplace/virtualenvs/isd_ETL/bin/python /d01/home/pilot/workplace/retrieve_data/isd_sns_comments_insert_v3.py >> /d01/home/pilot/workplace/crontab_log/sns_comm_v3.log 2>&1
+*/20 * * * * /d01/home/pilot/workplace/virtualenvs/isd_ETL/bin/python /d01/home/pilot/workplace/retrieve_data/isd_sns_comments_insert_v2.py >> /d01/home/pilot/workplace/crontab_log/sns_comm_v2.log 2>&1
+0 6 * * * /d01/home/pilot/workplace/virtualenvs/isd_ETL/bin/python /d01/home/pilot/workplace/retrieve_data/isd_pubtype_count.py >> /d01/home/pilot/workplace/crontab_log/pub_count.log 2>&1
+0 0 */7 * * truncate /d01/home/pilot/workplace/crontab_log/*.log --size 0
+
+
+*/1 * * * *  nohup  /d01/home/pilot/workplace/virtualenvs/isd_ETL/bin/python  /d01/home/pilot/workplace/retrieve_data/isd_post_topic_test.py  >> /d01/home/pilot/workplace/retrieve_data/isd_post_topic_test.log 2>&1 &
+
+
+## pico
+*/20 * * * * /d01/home/pilot/workplace/retrieve_data/pico_batch_create_index.sh >> /d01/home/pilot/workplace/crontab_log/pico_batch_create_index.log 2>&1
+*/60 * * * * /d01/home/pilot/workplace/retrieve_data/pico_update_last_pubdate_index.sh >> /d01/home/pilot/workplace/crontab_log/pico_update_last_pubdate_index.log 2>&1
+
+#legco
+#35 8 * * * /d01/home/pilot/workplace/retrieve_data/legco_batch_create_index.sh >> /d01/home/pilot/workplace/crontab_log/legco__batch_create_index.log 2>&1
+
+
+#ha
+*/20 * * * * /d01/home/pilot/workplace/retrieve_data/ha_batch_run_etl.sh >> /d01/home/pilot/workplace/crontab_log/ha_batch_run_etl.log 2>&1
+
+*/5 * * * * /d01/home/pilot/workplace/virtualenvs/isd_ETL/bin/python  /d01/home/pilot/workplace/retrieve_data/update_topic_type.py  >> /d01/home/pilot/workplace/retrieve_data/update_topic_type.log 2>&1 &
+
+#ha sync
+30 19 * * 2 /d01/home/pilot/workplace/virtualenvs/isd_ETL/bin/python  /d01/home/pilot/workplace/retrieve_data/ha_sync/ha_sync.sh  >> /d01/home/pilot/workplace/retrieve_data/ha_sync/ha_sync.log 2>&1 &
+
+
+0 8,16 * * * /d01/home/pilot/xml_api_data/batch_xml.sh >> /d01/home/pilot/workplace/crontab_log/batch_xml.log 2>&1
+
+*/29 * * * * /d01/home/pilot/xml_api_data/batch_xml3.sh >> /d01/home/pilot/workplace/crontab_log/batch_xml3.log 2>&1
+
+*/31 * * * * /d01/home/pilot/workplace/virtualenvs/isd_ETL/bin/python  /d01/home/opoint/api_xml_to_db.py  >> /d01/home/pilot/workplace/crontab_log/api_to_db.log 2>&1
+
+0 8,16 * * * /scripts/script.sh
+
+*/30 * * * /d01/home/pilot/workplace/virtualenvs/isd_ETL/bin/python  /d01/home/pilot/workplace/retrieve_data/ha_sync/ha_sync2.sh  >> /d01/home/pilot/workplace/retrieve_data/ha_sync/ha_sync2.log 2>&1 &
+
+
+
+0 8 * * * /d01/home/pilot/opoint/batch_xml.sh >> /d01/home/pilot/workplace/crontab_log/batch_xml.log 2>&1
+
+0 16 * * * /d01/home/pilot/opoint/batch_xml2.sh >> /d01/home/pilot/workplace/crontab_log/batch_xml.log 2>&1
+
+
+
+------------------------------------------------------------------------------------------------
+Virtual ENV
+------------------------------------------------------------------------------------------------
+source virtualenvs/isd_ETL/bin/activate
+deactivate
+-----------------------------------------------------------------------------------------------
+curl 'http://localhost:9200/?pretty'
+
+curl -XGET "localhost:9200/?pretty"
+
+su ec2-user -c 'ulimit -Hn'
+su root -c 'ulimit -Hn'
+
+----------------------------------------------------------------------------------------------
+
+docker run --rm -v es_certs:/certs --network=es_default docker.elastic.co/elasticsearch/elasticsearch:7.8.1 curl --cacert /certs/ca/ca.crt -u elastic:haelastic https://es01:9200
+
+
+------------run bash script in linux--------------------------------
+
+chmod +x demo.sh  # grant permission
+
+./ yourscript.sh 
+
+-----------------if script is created in windows--------------------
+
+sed -i '1s/^.*#//;s/\r$//' brokenScript
+
+--------------------------------------------------------------------
+
+docker run --rm -v es_certs:/certs --network=es_elastic docker.elastic.co/elasticsearch/elasticsearch:7.6.1 curl --cacert /certs/ca/ca.crt -u elastic:Haelastic https://es01:9200
+
+
+docker exec es01 /bin/bash -c "bin/elasticsearch-setup-passwords auto --batch --url https://localhost:9200"
+
+---------------------------------------curl test-----------------------------------------------------------------------
+
+curl -X GET "https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s&pretty" --key certificates/elasticsearch-ca.pem  -k -u elastic
+
+curl -v  "https://localhost:9200/_cluster/health?pretty" --key certificates/elasticsearch-ca.pem  -k -u elastic
+
+curl -v  "https://localhost:9200/?pretty" --key certificates/elasticsearch-ca.pem  -k -u elastic
+
+curl 'https://localhost:9200/?pretty' --key certificates/elasticsearch-ca.pem  -k -u elastic
+
+curl -XGET "https://localhost:9200/?pretty" --key certificates/elasticsearch-ca.pem  -k -u elastic
+
+curl -XGET "http://bwt-elk01.wisers.com:9200/?pretty" --key certificates/elasticsearch-ca.pem  -k -u elastic
+
+curl -v  "https://localhost:5601/?pretty" --key certificates/elasticsearch-ca.pem  -k -u elastic
+
+curl -v  "https://localhost:5601/?pretty" --key certificates/elasticsearch-ca.pem  -k -u kibana
+
+----------------------------------Elastic generated pw------------------------------------------------------------------------------
+
+
+
+
+------------------------------------Elasticdump------------------------------------------------------------------------------
+
+curl 'http://10.1.12.219:9200/?pretty' --key certificates/elasticsearch-ca.pem  -k -u elastic
+curl 'http://192.168.217.162:9200/?pretty' --key certificates/elasticsearch-ca.pem  -k -u elastic
+
+WisersElasticSearch
+
+
+elasticdump --input=http://elastic:WisersElasticSearch@192.168.217.162:9200/ha_post_topic_v2 --output=http://elastic:HaElastic@10.1.12.219:9200/ha_post_topic_v2 --type=mapping
+
+elasticdump --input=http://elastic:WisersElasticSearch@192.168.217.162:9200/ha_post_topic_v2 --output=http://elastic:HaElastic@10.1.12.219:9200/ha_post_topic_v2 --type=data
+
+-------------------脚本监测----------------------------------------------------------------------------------------
+
+
+
+
+----------------python virtualenv----------------------------------------------------
+cd venv3
+source p3venv/bin/activate
+
+Linux-------DNS------------------------------------------------------------------------
+
+#############################################
+Let's set the DNS resolvers for eth1 to point to Google's public DNS servers: 8.8.8.8 and 8.8.4.4.
+
+Setting your DNS resolvers using nmcli
+Perform the following steps:
+
+Set the DNS servers via the following command:
+~]# nmcli connection modify System\ eth1 ipv4.dns "8.8.8.8,8.8.4.4"
+Now, use the following command to check your configuration:
+~]# nmcli connection show System\ eth1
+
+#############################################
+
+systemctl start NetworkManager.service
+
+cat /etc/resolv.conf
+
+cat /etc/dhcp/dhclient.conf
+
+
+# Generated by NetworkManager
+search wisers.com
+nameserver 192.168.201.27
+nameserver 192.168.201.28
+nameserver 192.168.153.26
+
+
+
+
+
+Linux系统下面安装python--------------------------------------------------------------
+1.安装依赖文档： 
+# yum install gcc
+# yum install pcre pcre-devel
+# yum install zlib zlib-devel
+# yum install openssl openssl-devel
+
+2.选择存放位置并下载python
+
+# cd /usr/src
+# wget https://www.python.org/ftp/python/3.6.1/Python-3.6.1.tgz
+
+3.解压并进入档案目录 然后安装
+# tar -zxvf Python-3.6.1.tgz
+# cd Python-3.6.1
+# ./configure --with-ssl
+# make
+# make install
+
+4.建立捷径
+# ln -s /usr/local/bin/python3 /usr/bin/python3
+
+which <python3> 命令用来找到程序储存的位置
+
+alias pip=pip3 alias命令用来重命名文件或程序
+
+alias pip=/usr/local/bin/pip3
+
+sudo ln -s /usr/bin/pip3 /usr/bin/pip  设置捷径的命令， 用前面的路径替换后面的
+
+sudo yum remove python-pip      卸载程序
+
+alias python=python3
+unalias python
+
+------------------------install pip -------------------------------------------------------------------------------
+
+
+
+
+---------------------------------------------------------------------mysql 移植------------------------------------------
+
+
+---------------------- run a process in background-------------------------------------------------------------------------------
+
+Suspend the process with CTRL+Z 
+
+then use the command bg <id> to resume it in background.
+
+To start a process where you can even kill the terminal and it still carries on running
+
+nohup [command] [-args] > [filename] 2>&1 &
